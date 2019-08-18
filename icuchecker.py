@@ -1,35 +1,16 @@
-from pyseeyou import format
-try:
-    result = format(
-        '''{GENDER, select,
-                       male {He}
-                     female {She}
-                      other {They}
-                   } found {NUM_RESULTS, plural,
-                       one {1 result}}}}}
-                     other {# results}
-                   } in {NUM_CATEGORIES, plural,
-                         one {1 category}
-                       other {# categories}
-                   }.''', {
-            'GENDER': 'male',
-            'NUM_RESULTS': 1,
-            'NUM_CATEGORIES': '2'
-        }, 'en')
-    print(result)
-except Exception:
-    print("Error")
+import subprocess # module permettant d'appeler un programme externe (js dans notre cas)
+import sys # permet de recuperer les arguments passés au script python
+
+# output = subprocess.check_output(['node', 'C:\\Users\\Mamadou\\Desktop\\cours javascript\\ulbite.js',"Welcome, { name }!"])
+# argument à tester est 'sys.argv[1]]'
+# on a fusionner la sortie d'erreur et la sortie standard avec 'stderr = subprocess.STDOUT'
+# on requiert la sortie standard avec  'stdout = subprocess.PIPE'
 
 
-def isICUvalid(valueToCheck, values, lang):
-    try:
-        result = format(valueToCheck, values, lang)
-        return True
+process = subprocess.Popen(['node', './checker.js', sys.argv[1]], stderr = subprocess.STDOUT , stdout = subprocess.PIPE)
+output, _ = process.communicate() # execute le processus externe et renvoie les sorties standard et d'erreur du processus externe (le fichier js)
+output = output.decode() #la sortie etant binaire, on convertit la valeur retournée en string
+index = output.find("SyntaxError") # verification si il y'a une erreur de syntaxe dans la sortie standard du processus externe, afficher "syntaxError"
+if (index != -1): 
+    print(output[index:])
 
-    except Exception:
-        return False
-
-
-print(
-    isICUvalid('{number, plural, =1{(# device)} other{(# devices)}}', '10',
-               'en'))
